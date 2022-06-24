@@ -10,15 +10,16 @@ public class Ch2Q4 {
 		
 		
 		while( i <= end) {
+			if(i != 1 && i % 2 != 0)	{
+				System.out.print(",");
+			}
 			if(i % 2 != 0) {
 				System.out.print(i);
 			
 			}
 			i++;
 			
-		if(i != end && i % 2 != 0)	{
-			System.out.print(",");
-		}
+		
 			
 			
 			
