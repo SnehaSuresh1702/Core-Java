@@ -8,10 +8,11 @@ public class Sort {
 	OrderReader reader = new OrderReader();
 	ArrayList<Order> OrderList = reader.getOrderList();
 	
+	
 	class sortByOrderId implements Comparator<Order>{
 		public int compare(Order a, Order b) {
 		return a.getOrderId().compareTo(b.getOrderId());
-		
+		         
 		}
 	}
 	class sortByOrderDescription implements Comparator<Order>{

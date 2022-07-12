@@ -16,14 +16,16 @@ import java.util.Date;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-public class Methods {
+public class Methods implements OrderManagement {
 	
-	public static void addOrder() {
+	//Method to Add Order
+	public void addOrder() {
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
 		
 		Scanner scan = new Scanner(System.in);
-		char a;
+		//Scanner scan5 = new Scanner(System.in);
+		char userinput;
 		
 		try {
 			do {
@@ -37,21 +39,42 @@ public class Methods {
 						System.out.println("Enter a new Order Id");
 						OrderId = scan.next();
 					}
-				}
+					}
 				}while(flag == true);
 				System.out.println("Enter the Order Description");
-				String OrderDescription = scan.next();
+				scan.nextLine();
+				String OrderDescription = scan.nextLine();
+				//String OrderDescription = this.readString();
 				System.out.println("Enter the Delivery Address");
 				String DeliveryAddress = scan.next();
 				System.out.println("Order Date");
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH : mm : ss");
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 				LocalDateTime now = LocalDateTime.now();
 				System.out.println(dtf.format(now));
-				System.out.println("Enter the Amount");
-				double Amount = scan.nextDouble();
+				double Amount = 0.0;
+			outer :	while(true){
+				try {
+					System.out.println("Enter the Amount");
+					Amount = scan.nextDouble();
+					if(Amount <= 0.0) {
+						System.out.println("Enter a valid amount(Amount cannot be negative)");
+						continue outer;
+					}
+					break outer;
+				}catch(Exception e) {
+					//Scanner scan1 = new Scanner(System.in);
+					System.out.println("Enter a valid amount");
+					scan.nextLine();
+					continue outer;
+					
+					//Amount = scan.nextDouble();	
+				//}	
+				}
+				}
+				
 				System.out.println("Order Status: In Progress");
 				LocalDateTime DeliveryDatetime;
-				DateTimeFormatter dtf1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH : mm : ss");
+				DateTimeFormatter dtf1 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 				LocalDateTime now1 = LocalDateTime.now().plusDays(5);
 				System.out.println("Delivery Datetime:" + dtf.format(now1));
 				String Status = "In Progress";
@@ -61,37 +84,56 @@ public class Methods {
 				OrderList.add(o);
 				
 				System.out.println("Do you want to enter more order details(Y/N)");
-				a = scan.next().charAt(0);
+				userinput = scan.next().charAt(0);
 				
-				if(a == 'Y'|| a== 'y') {
+				if(userinput == 'Y'|| userinput == 'y') {
 					System.out.println("Enter another order.");
+					//OrderWriter.writeOrders();
 				}
-				else
+				else {
+					System.out.println();
 					HomePage.display();
-		
-				}while(a == 'Y' || a== 'y');
+			}
+				}while(userinput == 'Y' || userinput == 'y');
 		}catch(Exception e) {
-			System.out.println("Exception Caught");
+			System.out.println("Exception Caught.");
 		}
+	
 	}
 	
-	public static void viewOrderList() throws IOException {
+	/*private String readString() {
+		Scanner scan = new Scanner(System.in);
+		return scan.next();
+	}*/
+	
+	//Method to ViewOrderList
+	public void viewOrderList() {
 		
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
 		System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 		System.out.println("OrderId\t\t Order Description\t\t Delivery Address\t\t Order Date\t\t\t\t Amount\t\t\t Delivery Status\t\t\t DeliveryDatetime");
 		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 		for(Order order : OrderList) {
  			
- 			System.out.println(order.getOrderId()+"\t\t\t"+order.getOrderDescription()+"\t\t\t"+order.getDeliveryAddress()+"\t\t\t"+order.getOrderDate()+"\t\t\t"+order.getAmount()+"\t\t\t"+order.getStatus()+"\t\t\t"+order.getDeliveryDatetime());
+ 			System.out.println(order.getOrderId()+"\t\t\t"+order.getOrderDescription()+"\t\t\t"+order.getDeliveryAddress()+"\t\t\t"+order.getOrderDate().format(dtf)+"\t\t\t"+order.getAmount()+"\t\t\t"+order.getStatus()+"\t\t\t"+order.getDeliveryDatetime());
  		
 		}
-		HomePage.display();
+		try {
+			//OrderWriter.writeOrders();
+			System.out.println();
+			HomePage.display();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
  	}
  	
-	public static void viewOrderList(String index) throws IOException {
+	//Method to ViewOrderList, used MethodOverloading
+	public void viewOrderList(String index) {
+		boolean flag = false;
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
 		
@@ -109,12 +151,23 @@ public class Methods {
  				System.out.println("Order Date: " + order.getOrderDate());
  				System.out.println("Amount: " + order.getAmount());
  				System.out.println("Delivery Datetime: " + order.getDeliveryDatetime());
+ 				flag = true;
  			}
- 		}		
-		HomePage.display();
+ 		}
+		if(flag == false)
+			System.out.println("Order Not Found");
+		try {
+			//OrderWriter.writeOrders();
+			System.out.println();
+			HomePage.display();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public static void sortOrder() throws IOException{
+	//Method to Sort the list based on the property selected
+	public void sortOrder(){
 		System.out.println("Sub-Menu:");
 		System.out.println("*************Choose Sort Order Property*************");
 		System.out.println("1. OrderId");
@@ -130,25 +183,27 @@ public class Methods {
 		Scanner scan = new Scanner(System.in);
 		int submenu = scan.nextInt();
 		
-		System.out.println("******** Choose Sort Order *********");
-		System.out.println("1. Ascending");
-		System.out.println("2. Descending" );
-		
-		System.out.println("Choose Option:");
-		int sortorder = scan.nextInt();
-		
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
 		Sort sort = new Sort();
 		switch(submenu) {
-		case 1:if(sortorder == 1) {
+		
+		case 1:
+			System.out.println("******** Choose Sort Order *********");
+			System.out.println("1. Ascending");
+			System.out.println("2. Descending" );
+			
+			System.out.println("Choose Option:");
+			int sortorder = scan.nextInt();
+			
+			if(sortorder == 1) {
 			Collections.sort(OrderList, sort.new sortByOrderId());
 			System.out.println("Successfully Sorted by OrderId in Ascending Order");
 			for(int i = 0; i<OrderList.size(); i++) {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		else {
+		else if(sortorder == 2){
 			Collections.sort(OrderList, sort.new sortByOrderId());
 			Collections.reverse(OrderList);
 			System.out.println("Successfully Sorted by OrderId in Descending Order");
@@ -156,17 +211,33 @@ public class Methods {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		HomePage.display();
+		else
+			System.out.println("Invalid Input");
+			try {
+				System.out.println();
+				HomePage.display();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		break;
 		
-		case 2:if(sortorder == 1) {
+		case 2:
+			System.out.println("******** Choose Sort Order *********");
+			System.out.println("1. Ascending");
+			System.out.println("2. Descending" );
+			
+			System.out.println("Choose Option:");
+			sortorder = scan.nextInt();
+			
+			if(sortorder == 1) {
 			Collections.sort(OrderList, sort.new sortByOrderDescription());
 			System.out.println("Successfully Sorted by OrderDescription in Ascending Order");
 			for(int i = 0; i<OrderList.size(); i++) {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		else {
+		else if(sortorder == 2){
 			Collections.sort(OrderList, sort.new sortByOrderDescription());
 			Collections.reverse(OrderList);
 			System.out.println("Successfully Sorted by OrderDescription in Descending Order");
@@ -174,17 +245,33 @@ public class Methods {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		HomePage.display();
+		else
+			System.out.println("Invalid Input");
+			try {
+				System.out.println();
+				HomePage.display();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		break;	
 		
-		case 3:if(sortorder == 1) {
+		case 3:
+			System.out.println("******** Choose Sort Order *********");
+			System.out.println("1. Ascending");
+			System.out.println("2. Descending" );
+			
+			System.out.println("Choose Option:");
+			sortorder = scan.nextInt();
+			
+			if(sortorder == 1) {
 			Collections.sort(OrderList, sort.new sortByDeliveryAddress());
 			System.out.println("Successfully Sorted by Delivery Address in Ascending Order");
 			for(int i = 0; i<OrderList.size(); i++) {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		else {
+		else if(sortorder == 2){
 			Collections.sort(OrderList, sort.new sortByOrderDescription());
 			Collections.reverse(OrderList);
 			System.out.println("Successfully Sorted by Delivery Address in Descending Order");
@@ -192,17 +279,33 @@ public class Methods {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		HomePage.display();
+		else
+			System.out.println("Invalid Input");
+			try {
+				System.out.println();
+				HomePage.display();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		break;	
 		
-		case 4:if(sortorder == 1) {
+		case 4:
+			System.out.println("******** Choose Sort Order *********");
+			System.out.println("1. Ascending");
+			System.out.println("2. Descending" );
+			
+			System.out.println("Choose Option:");
+			sortorder = scan.nextInt();
+			
+			if(sortorder == 1) {
 			Collections.sort(OrderList, sort.new sortByOrderDate());
 			System.out.println("Successfully Sorted by Order Date in Ascending Order");
 			for(int i = 0; i<OrderList.size(); i++) {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		else {
+		else if(sortorder == 2){
 			Collections.sort(OrderList, sort.new sortByOrderDate());
 			Collections.reverse(OrderList);
 			System.out.println("Successfully Sorted by Order Date in Descending Order");
@@ -210,17 +313,33 @@ public class Methods {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		HomePage.display();
+		else
+			System.out.println("Invalid Input");
+			try {
+				System.out.println();
+				HomePage.display();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		break;	
 		
-		case 5:if(sortorder == 1) {
+		case 5:
+			System.out.println("******** Choose Sort Order *********");
+			System.out.println("1. Ascending");
+			System.out.println("2. Descending" );
+			
+			System.out.println("Choose Option:");
+			sortorder = scan.nextInt();
+			
+			if(sortorder == 1) {
 			Collections.sort(OrderList, sort.new sortByAmount());
 			System.out.println("Successfully Sorted by Amount in Ascending Order");
 			for(int i = 0; i<OrderList.size(); i++) {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		else {
+		else if(sortorder == 2){
 			Collections.sort(OrderList, sort.new sortByAmount());
 			Collections.reverse(OrderList);
 			System.out.println("Successfully Sorted by Amount in Descending Order");
@@ -228,17 +347,33 @@ public class Methods {
 				System.out.println(OrderList.get(i));
 			}
 		}
-		HomePage.display();
+		else
+			System.out.println("Invalid Input");
+			try {
+				System.out.println();
+				HomePage.display();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		break;	
 		
-	case 6:if(sortorder == 1) {
+	case 6:
+		System.out.println("******** Choose Sort Order *********");
+		System.out.println("1. Ascending");
+		System.out.println("2. Descending" );
+		
+		System.out.println("Choose Option:");
+		sortorder = scan.nextInt();
+		
+		if(sortorder == 1) {
 		Collections.sort(OrderList, sort.new sortByDeliveryDatetime());
 		System.out.println("Successfully Sorted by Delivery Datetime in Ascending Order");
 		for(int i = 0; i<OrderList.size(); i++) {
 			System.out.println(OrderList.get(i));
 		}
 	}
-	else {
+	else if(sortorder == 2){
 		Collections.sort(OrderList, sort.new sortByDeliveryDatetime());
 		Collections.reverse(OrderList);
 		System.out.println("Successfully Sorted by Delivery Datetime in Descending Order");
@@ -246,98 +381,171 @@ public class Methods {
 			System.out.println(OrderList.get(i));
 		}
 	}
-	HomePage.display();
+	else
+		System.out.println("Invalid Input");
+		try {
+			System.out.println();
+			HomePage.display();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		break;	
+	default:
+		System.out.println("Invalid Input");
+			try {
+				//OrderWriter.writeOrders();
+				HomePage.display();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	break;	
 		}	
 	}		
 	
-	public static void deleteOrderById() {
-		char b;
+	//Method to delete the order from the list based on the OrderId
+	public void deleteOrderById() {
+		char userinput;
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
 		
-		System.out.println("Enter the OrderId");
 		Scanner scan = new Scanner(System.in);
-		String OrderId = scan.next();
+		
 		try {
 		do {
-			
+			boolean flag = false;
+			System.out.println("Enter Order Id");
+			String OrderId = scan.next();
+		
 			for(Order order : OrderList) {
-	 			
-				if(order.getOrderId().equals((OrderId))){
-					
+				if(order.getOrderId().equals(OrderId)) {
 					OrderList.remove(order);
-					System.out.println("Order deleted Successfully.");
-					OrderWriter.writeOrders();
+					System.out.println("Order Deleted Successfully");
+					flag = true;
 					break;
-	 			}else {
-	 				System.out.println("Order Id is not available");
-	 				break;
-	 			}
-	 		}
-			System.out.println("Do you want to enter more order details(Y/N)");
-			b = scan.next().charAt(0);
-			
-			if(b == 'Y'|| b == 'y') {
-				System.out.println("Enter another Order Id.");
-				OrderWriter.writeOrders();
+				}
 			}
-			else
+			if(flag == false) {
+				System.out.println("OrderId not found");
+			}
+			
+			System.out.println("Do you want to delete another order(Y/N)");
+			userinput = scan.next().charAt(0);
+			if(userinput == 'Y' || userinput == 'y') {
+				System.out.println("Enter another OrderId");
+				
+				//b = scan.next().charAt(0);
+			//	OrderId = scan.next();
+				
+			}
+			else {
+				System.out.println();
 				HomePage.display();
-	
-			}while(b == 'Y' || b == 'y');
+		}
+		}while(userinput == 'Y' || userinput == 'y');
+		
 	}catch(Exception e) {
 		System.out.println("Exception Caught");
+		System.out.println("Enter valid data");
 		e.printStackTrace();
 	}
 	}
 	
-	public static void cancelOrder() throws IOException {
+	//Method to cancel an order from the list
+	public void cancelOrder() {
+		char userinput;
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
 		
 		System.out.println("Enter the OrderId");
 		Scanner scan = new Scanner(System.in);
-		String OrderId = scan.next();
-			
-		for(Order order : OrderList) {
- 			
-			if(order.getStatus().equals("Cancelled") && order.getOrderId().equals(OrderId)) {
-				System.out.println("Order is already cancelled");
+		
+		do {
+			boolean flag = false;
+			String OrderId = scan.next();
+			for(Order order : OrderList) {
+	 			
+				if(order.getStatus().equals("Cancelled") && order.getOrderId().equals(OrderId)) {
+					System.out.println("Order is already cancelled");
+					flag = true;
+				}
+				else if( order.getOrderId().equals(OrderId) && (order.getStatus().equals("In Progress"))) {
+					order.setStatus("Cancelled");
+					order.setDeliveryDatetime(null);
+					System.out.println("Successfully Cancelled");
+					flag = true;
+				}
+				else if(order.getOrderId().equals(OrderId) && (order.getStatus().equals("Delivered"))) {
+					System.out.println("The order is Delivered, Cannot be Cancelled");
+					flag = true;
+				}
+	 		}
+			if(flag = false)
+				System.out.println("Order Not Found");
+			System.out.println("Do you want to cancel another order(Y/N)");
+			userinput = scan.next().charAt(0);
+			if(userinput == 'Y' || userinput == 'y') {
+				System.out.println("Enter another OrderId");
 			}
-			else if( order.getOrderId().equals(OrderId)) {
-				order.setStatus("Cancelled");
-				order.setDeliveryDatetime(null);
-				System.out.println("Successfully Cancelled");
-			}
- 		}
-		HomePage.display();
+		}while(userinput == 'Y' || userinput == 'y');
+		try {
+			//OrderWriter.writeOrders();
+			System.out.println();
+			HomePage.display();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}	
 	
-	public static void markAsDelivered() throws IOException {
+	//Method to mark an order as delivered
+	public void markAsDelivered() {
+		char userinput;
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
 		
 		System.out.println("Enter the OrderId");
 		Scanner scan = new Scanner(System.in);
-		String OrderId = scan.next();
+		do {
+			boolean flag = false;
+			String OrderId = scan.next();
 			
-		for(Order order : OrderList) {
- 			
-			if((order.getStatus().equals("Delivered")) && order.getOrderId().equals(OrderId)) {
-				System.out.println("Order is already delivered on " + order.getDeliveryDatetime());
+			for(Order order : OrderList) {
+	 			
+				if((order.getStatus().equals("Delivered")) && order.getOrderId().equals(OrderId)) {
+					System.out.println("Order is already delivered on " + order.getDeliveryDatetime());
+					flag = true;
+				}
+				else if(order.getOrderId().equals(OrderId) && (order.getStatus().equals("In Progress"))){
+					order.setStatus("Delivered");
+					order.setDeliveryDatetime(LocalDateTime.now());
+					System.out.println("Successfully Delivered");
+					flag  = true;
+				}
+				else if(order.getOrderId().equals(OrderId) && (order.getStatus().equals("Cancelled"))){
+					System.out.println("The order is Cancelled, Cannot be Delivered");
+					flag = true;
+				}
+	 		}
+			if(flag == false)
+				System.out.println("Order Not Found");
+			System.out.println("Do you want to mark another Order as Delivered(Y/N)");
+			userinput = scan.next().charAt(0);
+			if(userinput == 'Y' || userinput == 'y') {
+				System.out.println("Enter another OrderId");
 			}
-			else if(order.getOrderId().equals(OrderId)){
-				order.setStatus("Delivered");
-				order.setDeliveryDatetime(LocalDateTime.now());
-				System.out.println("Successfully Delivered");
-				//OrderWriter.writeOrders();
-			}
- 		}
-		HomePage.display();
+		}while(userinput == 'Y' || userinput == 'y');
+		try {
+			//OrderWriter.writeOrders();
+			System.out.println();
+			HomePage.display();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static void report() throws IOException {
+	//Method to generate report
+	public void report() throws IOException {
 		
 		System.out.println("Sub-Menu:");
 		System.out.println("*************Choose Report Property*************");
@@ -347,17 +555,17 @@ public class Methods {
 		
 		System.out.println("Choose Option:");
 		Scanner scan = new Scanner(System.in);
-		int j = scan.nextInt();
+		int option = scan.nextInt();
 		
 		OrderReader reader = new OrderReader();
 		ArrayList<Order> OrderList = reader.getOrderList();
-		String filesuffix = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		String filesuffix = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String filename = "C:\\Users\\Sneha Suresh\\eclipse-workspace\\Report-New"+filesuffix+".txt";
 		File file = new File(filename);
 		file.createNewFile();
 		FileWriter writer = new FileWriter(filename);
 		Writer write = new BufferedWriter(writer);
-		if(j == 1){
+		if(option == 1){
 			
 				try {	
 					for( int i = 0; i < OrderList.size(); i++) {
@@ -368,16 +576,21 @@ public class Methods {
 				}catch(IOException e) {
 					e.printStackTrace();
 				}
+				System.out.println("Report Generated Successfully");
+				System.out.println();
+				HomePage.display();
 		}
-		else {	
+		else {
 			System.out.println("******** Choose Status *********");
 			System.out.println("1. In Progress");
 			System.out.println("2. Delivered");
 			System.out.println("3. Cancelled");
+			System.out.println("Enter the choice");
 			int status = scan.nextInt();
 		  
-			if(status == 1) {
-			 try {	
+			switch(status) {
+			case 1:
+			try {	
 				for(Order order : OrderList) {
 				if((order.getStatus().equals("In Progress"))){	
 					writer.write(order+"\n");
@@ -388,8 +601,8 @@ public class Methods {
 			}catch(IOException e) {
 				e.printStackTrace();
 			}
-		}
-			else if(status == 2) {
+			break;
+			case 2:
 				 try {	
 					for(Order order : OrderList) {
 					if((order.getStatus().equals("Delivered"))){	
@@ -401,8 +614,8 @@ public class Methods {
 				}catch(IOException e) {
 					e.printStackTrace();
 				}
-			}
-			else {
+				 break;
+			case 3: 
 				 try {	
 					for(Order order : OrderList) {
 					if((order.getStatus().equals("Cancelled"))){	
@@ -414,13 +627,22 @@ public class Methods {
 				}catch(IOException e) {
 					e.printStackTrace();
 				}
-			}
-		}	
+				 break;
+			default:
+				try {
+				System.out.println("Invalid input");
+				HomePage.display();
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+		}
+		}
 		System.out.println("Report Generated Successfully");
+		System.out.println();
 		HomePage.display();
 	}
 	
-	public static void exit() throws IOException {
+	public void exit() throws IOException {
 		
 		OrderWriter.writeOrders();
 	}

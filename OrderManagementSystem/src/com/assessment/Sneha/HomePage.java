@@ -1,13 +1,21 @@
 package com.assessment.Sneha;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 public class HomePage implements Runnable {
 public void run() {
 		try {
-			Methods.report();
+		Methods reports = new Methods();
+		reports.report();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -35,36 +43,55 @@ public void run() {
 		
 		switch(menu)
 		{
-			case 1: Methods.addOrder();
+			case 1: 
+				Methods add = new Methods();
+				add.addOrder();
 					break;
 					
-			case 2: Methods.viewOrderList();
+			case 2: 
+				Methods view = new Methods();
+			    view.viewOrderList();
 					break;
 					
-			case 3: Methods.viewOrderList(null);
+			case 3: 
+				Methods viewID = new Methods();
+				viewID.viewOrderList(null);
 					break;		
 					
-			case 4: Methods.sortOrder();
+			case 4: 
+				Methods sort = new Methods();
+				sort.sortOrder();
 					break;
 			
-			case 5: Methods.deleteOrderById();
+			case 5: 
+				Methods delete = new Methods();
+				delete.deleteOrderById();
 					break;
 					
-			case 6: Methods.markAsDelivered();
+			case 6: 
+				Methods mark = new Methods();
+				mark.markAsDelivered();
 					break;
 					
-			case 7: Methods.cancelOrder();
+			case 7: 
+				Methods cancel = new Methods();
+				cancel.cancelOrder();
 					break;
 					
 			case 8: Thread t = new Thread(new HomePage());
-					t.start();
-					
+					t.run();
+					break;
+				
 			case 9: try {
-				Methods.exit();
+				Methods exit = new Methods();
+				exit.exit();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			break;
+			default:
+				System.out.println("Invalid Input");
+				HomePage.display();
 		}
 	}
 }

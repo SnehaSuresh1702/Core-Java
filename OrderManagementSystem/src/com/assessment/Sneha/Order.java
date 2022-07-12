@@ -82,5 +82,6 @@ import java.time.LocalDateTime;
 		Amount = amount;
 		Status = status;
 		DeliveryDatetime = deliveryDatetime;
+		
 	}
 }
